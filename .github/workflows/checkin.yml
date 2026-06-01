@@ -2,7 +2,7 @@ name: 微博超话签到
 
 on:
   schedule:
-    - cron: "0 16 * * *"
+    - cron: "0 22 * * *"
   workflow_dispatch:
 
 jobs:
