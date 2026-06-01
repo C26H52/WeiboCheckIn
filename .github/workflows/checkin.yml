@@ -25,5 +25,6 @@ jobs:
       - name: 执行签到
         env:
           USERS_JSON: ${{ secrets.USERS_JSON }}
+          SERVERCHAN_SENDKEY: ${{ secrets.SERVERCHAN_SENDKEY }}
           PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
         run: python scripts/run_checkin.py

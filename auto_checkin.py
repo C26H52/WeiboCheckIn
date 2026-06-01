@@ -35,6 +35,8 @@ if not users:
     log.warning("没有已登录用户，跳过")
     sys.exit(0)
 
+all_results = []
+
 for user in users:
     uid = user["uid"]
     username = user["username"]
@@ -43,5 +45,16 @@ for user in users:
     set_cookie_file(cookie_file)
     result = start_checkin()
     log.info(f"结果: 总数={result['total']} 成功={result['success']} 失败={result['error']} 已签={result['yiqian']}")
+    all_results.append((username, result))
+
+lines = ["| 用户 | 成功 | 失败 | 已签 |", "|------|------|------|------|"]
+for username, rr in all_results:
+    lines.append(f"| {username} | {rr['success']} | {rr['error']} | {rr['yiqian']} |")
+
+from weibo_notify import send_notification
+send_notification(
+    title=f"微博签到完成 ({len(all_results)}人)",
+    content="\n".join(lines),
+)
 
 log.info("定时签到完成")

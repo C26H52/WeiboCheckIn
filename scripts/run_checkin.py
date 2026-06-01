@@ -92,6 +92,19 @@ for r in all_results:
     rr = r["result"]
     log.info(f"  {r['username']}: 成功{rr['success']} 失败{rr['error']} 已签{rr['yiqian']}")
 
+# ── 微信通知 ────────────────────────────────
+
+lines = ["| 用户 | 成功 | 失败 | 已签 |", "|------|------|------|------|"]
+for r in all_results:
+    rr = r["result"]
+    lines.append(f"| {r['username']} | {rr['success']} | {rr['error']} | {rr['yiqian']} |")
+
+from weibo_notify import send_notification
+send_notification(
+    title=f"微博签到完成 ({len(all_results)}人)",
+    content="\n".join(lines),
+)
+
 # ── 5. 更新 Secrets ──────────────────────────
 
 pat = os.environ.get("PAT_TOKEN", "")
