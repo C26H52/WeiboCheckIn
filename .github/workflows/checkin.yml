@@ -1,0 +1,29 @@
+name: 微博超话签到
+
+on:
+  schedule:
+    - cron: "0 16 * * *"
+  workflow_dispatch:
+
+jobs:
+  checkin:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 安装 Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: 安装依赖
+        run: pip install requests
+
+      - name: 执行签到
+        env:
+          USERS_JSON: ${{ secrets.USERS_JSON }}
+          PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
+        run: python scripts/run_checkin.py

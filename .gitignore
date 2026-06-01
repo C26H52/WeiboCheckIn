@@ -1,0 +1,19 @@
+# 敏感数据 - 不提交
+*.pkl
+users.json
+users_json_secret.txt
+config.properties
+
+# 日志
+*.log
+
+# Python
+__pycache__/
+*.pyc
+
+# JAR 解压产物
+extracted/
+
+# IDE
+.idea/
+.vscode/
