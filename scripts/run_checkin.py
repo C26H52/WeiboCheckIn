@@ -54,11 +54,15 @@ for user in users:
     except Exception as e:
         log.error(f"解码 {uid} Cookie 失败: {e}")
 
-# ── 2. 随机延迟 ──────────────────────────────
+# ── 2. 随机延迟（定时触发才延迟，手动触发跳过） ──
 
-delay = random.randint(0, 14400)
-log.info(f"随机延迟 {delay}秒 (约 {delay//60} 分钟)")
-time.sleep(delay)
+event_name = os.environ.get("GITHUB_EVENT_NAME", "")
+if event_name == "schedule":
+    delay = random.randint(0, 14400)
+    log.info(f"定时触发, 随机延迟 {delay}秒 (约 {delay//60} 分钟)")
+    time.sleep(delay)
+else:
+    log.info(f"手动触发 ({event_name}), 跳过延迟")
 
 # ── 3. 执行签到 ──────────────────────────────
 
