@@ -33,8 +33,7 @@ def set_cookie_file(path: str):
 
 def _create_session() -> requests.Session:
     s = requests.Session()
-    s.max_redirects = 0
-    load_cookies(s, _cookie_file)
+    load_cookies(s)
     return s
 
 
