@@ -78,13 +78,7 @@ def checkin_chaohua(oid: str) -> Optional[CheckinOkBean]:
         )
         body = resp.text
         log.info(f"[签到] oid={oid} 状态码={resp.status_code} body长度={len(body)}")
-        if resp.status_code != 200:
-            log.warning(f"[签到] 非200响应, Location={resp.headers.get('Location', 'None')}")
-            return None
-        if not body:
-            log.info(f"[签到] 响应头: {dict(resp.headers)}")
-        else:
-            log.debug(f"[签到] body(前300): {body[:300]}")
+        log.info(f"[签到] body(前300): {body[:300]}")
         raw = json.loads(body)
         save_cookies(s, _cookie_file)
         checkin_bean = _safe_init(CheckinBean, raw)
