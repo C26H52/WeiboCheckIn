@@ -74,7 +74,6 @@ def checkin_chaohua(oid: str) -> Optional[CheckinOkBean]:
                 "referer": referer,
                 "x-requested-with": "XMLHttpRequest",
             },
-            allow_redirects=False,
             timeout=30,
         )
         body = resp.text
