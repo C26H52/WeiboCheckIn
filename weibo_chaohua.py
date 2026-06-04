@@ -39,13 +39,13 @@ def _create_session() -> requests.Session:
 
 def get_chaohua_list(page: int) -> Optional[CHListBean]:
     url = f"https://weibo.com/ajax/profile/topicContent?tabid=231093_-_chaohua&page={page}"
-    log.info(f"[超话列表] 请求第{page}页")
+    log.info(f"[超话列表] 请求第{page}页, cookie文件={_cookie_file}")
     s = _create_session()
     try:
         resp = s.get(url, headers={"user-agent": USER_AGENT, "referer": REFERER_WEIBO}, timeout=30)
         log.info(f"[超话列表] 状态码={resp.status_code} 最终URL={resp.url}")
         body = resp.text
-        log.debug(f"[超话列表] body长度={len(body)} (前300): {body[:300]}")
+        log.info(f"[超话列表] body长度={len(body)} (前200): {body[:200]}")
         data = json.loads(body)
         save_cookies(s, _cookie_file)
         bean = CHListBean.from_json(data)

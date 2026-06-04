@@ -52,13 +52,13 @@ def save_cookies(session: requests.Session, filepath: Optional[str] = None):
     with open(path, "wb") as f:
         pickle.dump(cookies_dict, f)
     total = sum(len(cs) for pcs in cookies_dict.values() for cs in pcs.values())
-    log.debug(f"[Cookie] 保存 {total} 个Cookie到 {os.path.basename(path)}")
+    log.info(f"[Cookie] 保存 {total} 个Cookie到 {os.path.basename(path)}")
 
 
 def load_cookies(session: requests.Session, filepath: Optional[str] = None):
     path = _get_cookie_path(filepath)
     if not os.path.exists(path):
-        log.debug(f"[Cookie] 文件 {os.path.basename(path)} 不存在")
+        log.info(f"[Cookie] 文件 {os.path.basename(path)} 不存在")
         return
     try:
         with open(path, "rb") as f:
@@ -88,7 +88,7 @@ def load_cookies(session: requests.Session, filepath: Optional[str] = None):
                     )
                     session.cookies.set_cookie(c)
                     count += 1
-        log.debug(f"[Cookie] 从 {os.path.basename(path)} 加载 {count} 个Cookie")
+        log.info(f"[Cookie] 从 {os.path.basename(path)} 加载 {count} 个Cookie")
     except Exception as e:
         log.error(f"[Cookie] 加载异常: {e}\n{traceback.format_exc()}")
 
