@@ -44,9 +44,9 @@ def get_chaohua_list(page: int) -> Optional[CHListBean]:
     s = _create_session()
     try:
         resp = s.get(url, headers={"user-agent": USER_AGENT, "referer": REFERER_WEIBO}, timeout=30)
-        log.debug(f"[超话列表] 状态码: {resp.status_code}")
+        log.info(f"[超话列表] 状态码={resp.status_code} 最终URL={resp.url}")
         body = resp.text
-        log.debug(f"[超话列表] 响应体(前300): {body[:300]}")
+        log.info(f"[超话列表] body长度={len(body)} (前300): {body[:300]}")
         save_cookies(s, _cookie_file)
         data = json.loads(body)
         bean = CHListBean.from_json(data)
@@ -79,7 +79,11 @@ def checkin_chaohua(oid: str) -> Optional[CheckinOkBean]:
             timeout=30,
         )
         body = resp.text
-        log.debug(f"[签到] oid={oid} 状态码={resp.status_code} body(前200)={body[:200]}")
+        log.info(f"[签到] oid={oid} 状态码={resp.status_code} 最终URL={resp.url} body长度={len(body)}")
+        if not body:
+            log.info(f"[签到] 响应头: {dict(resp.headers)}")
+        else:
+            log.info(f"[签到] body(前300): {body[:300]}")
         save_cookies(s, _cookie_file)
 
         try:
