@@ -42,13 +42,10 @@ def get_chaohua_list(page: int) -> Optional[CHListBean]:
     log.info(f"[超话列表] 请求第{page}页")
     s = _create_session()
     try:
-        # 预热请求: 先访问首页建立访客Cookie
-        s.get("https://weibo.com/", headers={"user-agent": USER_AGENT}, timeout=10)
-
         resp = s.get(url, headers={"user-agent": USER_AGENT, "referer": REFERER_WEIBO}, timeout=30)
         log.info(f"[超话列表] 状态码={resp.status_code} 最终URL={resp.url}")
         body = resp.text
-        log.info(f"[超话列表] body长度={len(body)} (前300): {body[:300]}")
+        log.debug(f"[超话列表] body长度={len(body)} (前300): {body[:300]}")
         save_cookies(s, _cookie_file)
         data = json.loads(body)
         bean = CHListBean.from_json(data)
@@ -71,9 +68,6 @@ def checkin_chaohua(oid: str) -> Optional[CheckinOkBean]:
     log.debug(f"[签到] oid={oid}")
     s = _create_session()
     try:
-        s.get("https://weibo.com/", headers={"user-agent": USER_AGENT}, timeout=10)
-        s.get(referer, headers={"user-agent": USER_AGENT}, timeout=10)
-
         resp = s.get(
             checkin_url,
             headers={
@@ -85,15 +79,15 @@ def checkin_chaohua(oid: str) -> Optional[CheckinOkBean]:
             timeout=30,
         )
         body = resp.text
-        log.info(f"[签到] oid={oid} 状态码={resp.status_code} 最终URL={resp.url} body长度={len(body)}")
+        log.info(f"[签到] oid={oid} 状态码={resp.status_code} body长度={len(body)}")
         if resp.status_code != 200:
-            log.warning(f"[签到] 非200响应: {resp.status_code}, Location={resp.headers.get('Location', 'None')}")
+            log.warning(f"[签到] 非200响应, Location={resp.headers.get('Location', 'None')}")
             save_cookies(s, _cookie_file)
             return None
         if not body:
             log.info(f"[签到] 响应头: {dict(resp.headers)}")
         else:
-            log.info(f"[签到] body(前300): {body[:300]}")
+            log.debug(f"[签到] body(前300): {body[:300]}")
         save_cookies(s, _cookie_file)
 
         try:
