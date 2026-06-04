@@ -54,7 +54,6 @@ def get_chaohua_list(page: int) -> Optional[CHListBean]:
         return bean
     except Exception as e:
         log.error(f"[超话列表] 第{page}页异常: {e}\n{traceback.format_exc()}")
-        save_cookies(s, _cookie_file)
         return None
 
 
@@ -82,7 +81,6 @@ def checkin_chaohua(oid: str) -> Optional[CheckinOkBean]:
         log.info(f"[签到] oid={oid} 状态码={resp.status_code} body长度={len(body)}")
         if resp.status_code != 200:
             log.warning(f"[签到] 非200响应, Location={resp.headers.get('Location', 'None')}")
-            save_cookies(s, _cookie_file)
             return None
         if not body:
             log.info(f"[签到] 响应头: {dict(resp.headers)}")
@@ -115,7 +113,6 @@ def checkin_chaohua(oid: str) -> Optional[CheckinOkBean]:
             return result
     except Exception as e:
         log.error(f"[签到] 请求异常 oid={oid}: {e}\n{traceback.format_exc()}")
-        save_cookies(s, _cookie_file)
         return None
 
 
