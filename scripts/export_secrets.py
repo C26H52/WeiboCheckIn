@@ -12,6 +12,8 @@ ROOT_DIR = os.path.dirname(SCRIPT_DIR)
 os.chdir(ROOT_DIR)
 sys.path.insert(0, ROOT_DIR)
 
+sys.stdout.reconfigure(encoding='utf-8')
+
 print("=" * 60)
 print("GitHub Secrets 导出工具")
 print("=" * 60)
@@ -52,7 +54,9 @@ if len(final_json) > 500:
     print("│ ... (截断, 请复制完整输出)                           │")
 print("└" + "─" * 58 + "┘")
 print()
-print("⚠ 请复制上面框内的完整 JSON，粘贴到 Secret 的 Value")
+print(f"⚠ 完整 JSON 已写入 secret_output.txt，请从该文件复制")
+with open("secret_output.txt", "w", encoding="utf-8") as f:
+    f.write(final_json)
 print()
 if len(final_json) > 48000:
     print("⚠⚠⚠ 数据超过 48KB！GitHub Secrets 限制 48KB。请减少账号。")
