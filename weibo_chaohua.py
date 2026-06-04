@@ -72,6 +72,7 @@ def checkin_chaohua(oid: str) -> Optional[CheckinOkBean]:
     s = _create_session()
     try:
         s.get("https://weibo.com/", headers={"user-agent": USER_AGENT}, timeout=10)
+        s.get(referer, headers={"user-agent": USER_AGENT}, timeout=10)
 
         resp = s.get(
             checkin_url,
@@ -80,10 +81,15 @@ def checkin_chaohua(oid: str) -> Optional[CheckinOkBean]:
                 "referer": referer,
                 "x-requested-with": "XMLHttpRequest",
             },
+            allow_redirects=False,
             timeout=30,
         )
         body = resp.text
         log.info(f"[签到] oid={oid} 状态码={resp.status_code} 最终URL={resp.url} body长度={len(body)}")
+        if resp.status_code != 200:
+            log.warning(f"[签到] 非200响应: {resp.status_code}, Location={resp.headers.get('Location', 'None')}")
+            save_cookies(s, _cookie_file)
+            return None
         if not body:
             log.info(f"[签到] 响应头: {dict(resp.headers)}")
         else:
