@@ -46,8 +46,8 @@ def get_chaohua_list(page: int) -> Optional[CHListBean]:
         log.info(f"[超话列表] 状态码={resp.status_code} 最终URL={resp.url}")
         body = resp.text
         log.debug(f"[超话列表] body长度={len(body)} (前300): {body[:300]}")
-        save_cookies(s, _cookie_file)
         data = json.loads(body)
+        save_cookies(s, _cookie_file)
         bean = CHListBean.from_json(data)
         item_count = len(bean.data.list) if bean.data else 0
         log.info(f"[超话列表] 第{page}页获取成功, 共{item_count}个超话")
@@ -85,14 +85,9 @@ def checkin_chaohua(oid: str) -> Optional[CheckinOkBean]:
             log.info(f"[签到] 响应头: {dict(resp.headers)}")
         else:
             log.debug(f"[签到] body(前300): {body[:300]}")
+        raw = json.loads(body)
         save_cookies(s, _cookie_file)
-
-        try:
-            raw = json.loads(body)
-            checkin_bean = _safe_init(CheckinBean, raw)
-        except Exception as e:
-            log.error(f"[签到] JSON解析失败 oid={oid}: {e}")
-            return None
+        checkin_bean = _safe_init(CheckinBean, raw)
 
         if checkin_bean.code == 100000:
             try:
