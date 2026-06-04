@@ -19,7 +19,7 @@ log = get_logger()
 
 USER_AGENT = (
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-    "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+    "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
 )
 REFERER_WEIBO = "https://weibo.com/"
 
@@ -40,9 +40,11 @@ def _create_session() -> requests.Session:
 def get_chaohua_list(page: int) -> Optional[CHListBean]:
     url = f"https://weibo.com/ajax/profile/topicContent?tabid=231093_-_chaohua&page={page}"
     log.info(f"[超话列表] 请求第{page}页")
-    log.debug(f"[超话列表] URL: {url}")
     s = _create_session()
     try:
+        # 预热请求: 先访问首页建立访客Cookie
+        s.get("https://weibo.com/", headers={"user-agent": USER_AGENT}, timeout=10)
+
         resp = s.get(url, headers={"user-agent": USER_AGENT, "referer": REFERER_WEIBO}, timeout=30)
         log.info(f"[超话列表] 状态码={resp.status_code} 最终URL={resp.url}")
         body = resp.text
@@ -69,6 +71,8 @@ def checkin_chaohua(oid: str) -> Optional[CheckinOkBean]:
     log.debug(f"[签到] oid={oid}")
     s = _create_session()
     try:
+        s.get("https://weibo.com/", headers={"user-agent": USER_AGENT}, timeout=10)
+
         resp = s.get(
             checkin_url,
             headers={
