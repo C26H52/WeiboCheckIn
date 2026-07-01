@@ -105,10 +105,13 @@ send_notification(
     content="\n".join(lines),
 )
 
-# ── 5. 更新 Secrets ──────────────────────────
+# ── 5. 更新 Secrets (仅在签到成功时) ──────────
 
 pat = os.environ.get("PAT_TOKEN", "")
-if pat:
+all_failed = all(r["result"]["total"] == 0 for r in all_results)
+if all_failed and pat:
+    log.warning("所有账号签到均失败(Cookie过期?), 跳过自动更新Secret")
+elif pat:
     log.info("检测到 PAT_TOKEN, 更新 USERS_JSON Secret...")
     try:
         import requests as req
