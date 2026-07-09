@@ -19,3 +19,4 @@ extracted/
 .vscode/
 WeiboComCheckin.jar
 secret*.txt
+browser_profile/
