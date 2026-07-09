@@ -1,0 +1,8 @@
+2026/07/09-11:22:44.239 6518 Reusing MANIFEST E:\WeiboChaohuaCheckin\browser_profile\Default\Local Storage\leveldb/MANIFEST-000001
+2026/07/09-11:22:44.248 6518 Recovering log #3
+2026/07/09-11:22:44.249 6518 Level-0 table #3: started
+2026/07/09-11:22:44.269 6518 Level-0 table #3: 107191 bytes OK
+2026/07/09-11:22:44.288 6518 Delete type=0 #3
+2026/07/09-11:22:53.948 72f0 Level-0 table #6: started
+2026/07/09-11:22:53.962 72f0 Level-0 table #6: 123373 bytes OK
+2026/07/09-11:22:53.978 72f0 Delete type=0 #4

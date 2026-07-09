@@ -87,17 +87,26 @@ def update_users_file(uid: str, username: str, cookie_file: str):
 
 
 def is_logged_in(page) -> bool:
+    # 方法1: 检查是否被重定向到登录页
+    url = page.url
+    if "login.sina.com.cn" in url or "passport.weibo.com" in url:
+        return False
+    if "login.php" in url:
+        return False
+
+    # 方法2: 检查关键 Cookie 是否存在且未过期
     cookies = page.context.cookies()
+    now = time.time()
     for c in cookies:
-        if c.get("name") == "SSOLoginState" and c.get("domain", "").endswith("weibo.com"):
-            try:
-                expires = int(c.get("expires", 0))
-                if expires > time.time():
-                    log.info(f"Cookie 有效, {expires - time.time():.0f} 秒后过期")
-                    return True
-            except Exception:
-                pass
-    return False
+        name = c.get("name", "")
+        domain = c.get("domain", "")
+        if name in ("SSOLoginState", "ALF") and "weibo" in domain:
+            expires = c.get("expires", -1)
+            if isinstance(expires, (int, float)) and expires > now:
+                return True
+
+    # 方法3: 页面不在登录页就认为已登录
+    return "weibo.com" in url and "login.php" not in url
 
 
 def get_user_info(page) -> tuple[str, str]:
