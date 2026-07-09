@@ -106,30 +106,44 @@ def get_user_info(page) -> tuple[str, str]:
     username = ""
 
     try:
-        # 尝试从页面 JS 配置中提取
-        config = page.evaluate("""() => {
-            var scripts = document.querySelectorAll('script');
-            for (var i=0;i<scripts.length;i++) {
-                var m = scripts[i].textContent.match(/"user_id":\s*"?(\d+)"?/);
-                if (m) return m[1];
-            }
-            var m = document.documentElement.innerHTML.match(/"user_id":\s*"?(\d+)"?/);
-            return m ? m[1] : '';
+        # 方法1: 从页面 JS 的 $CONFIG 对象
+        uid = page.evaluate("""() => {
+            try { return String($CONFIG.user_id || $CONFIG.uid || $CONFIG.oid || ''); } catch(e) {}
+            try { return String(window.$CONFIG.user_id || window.$CONFIG.uid || ''); } catch(e) {}
+            return '';
         }""")
-        if config:
-            uid = str(config)
     except Exception:
         pass
 
-    # 从 page URL 提取 uid
+    # 方法2: 从 URL
+    if not uid:
+        url = page.url
+        m = re.search(r"weibo\.com/u/(\d+)", url) or re.search(r"weibo\.com/(\d+)/", url)
+        if m:
+            uid = m.group(1)
+
+    # 方法3: 从页面 HTML 中搜索 JSON 配置
     if not uid:
         try:
-            url = page.url
-            m = re.search(r"/u/(\d+)", url)
+            html = page.content()
+            m = re.search(r'"user_id"\s*[:=]\s*"?(\d+)"?', html)
             if m:
                 uid = m.group(1)
         except Exception:
             pass
+
+    if not uid:
+        # 从现有 users.json 读取已知 uid 做备用匹配
+        users_file = os.path.join(BASE_DIR, "users.json")
+        if os.path.exists(users_file):
+            try:
+                with open(users_file, "r", encoding="utf-8") as f:
+                    users = json.load(f)
+                if users:
+                    uid = users[0].get("uid", "")
+                    username = users[0].get("username", "")
+            except Exception:
+                pass
 
     if not uid:
         uid = "unknown"
